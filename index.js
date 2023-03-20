@@ -83,14 +83,11 @@ app.command('/standup', async ({ command, ack, say }) => {
     // Prompt each user in the channel for their standup updates
     const channelId = command.channel_id;
     const slackResponse = await fetch(`https://slack.com/api/conversations.members?token=${process.env.SLACK_APP_TOKEN}&channel=${channelId}`);
-    const members = slackResponse.get("members");
-    console.log(members)
+    const users = slackResponse.get("members");
+    console.log(users);
 
-    if (command.channel_members) {
-	    const users = command.channel_members;
-	    for (const userId of users) {
-		await promptStandupQuestions(userId);
-	    }
+    for (const userId of users) {
+        await promptStandupQuestions(userId);
     }
 
     // Send confirmation message to channel
