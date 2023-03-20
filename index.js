@@ -1,6 +1,6 @@
 // Import the necessary packages and create a new instance of the App class
 const dotenv = require('dotenv');
-const { App } = require('@slack/bolt');
+const { App, LogLevel } = require('@slack/bolt');
 const { Pool } = require('pg');
 const cron = require('node-cron');
 
@@ -9,20 +9,18 @@ dotenv.config();
 const app = new App({
     signingSecret: process.env.SLACK_SIGNING_SECRET,
     token: process.env.SLACK_APP_TOKEN,
+    logLevel: LogLevel.DEBUG,
     botToken: process.env.SLACK_BOT_TOKEN
     // botId: 'B04V1GB01R7'
 });
 
 // Schedule the /standup command to be sent every weekday at 9:30 am
-// cron.schedule('30 9 * * 1-5', async () => {
-const wrapper = async () => {
+cron.schedule('30 9 * * 1-5', async () => {
   await app.client.chat.postMessage({
     channel: process.env.CHANNEL_ID,
     text: '/standup'
   });
-// });
-};
-wrapper();
+});
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -83,9 +81,11 @@ app.command('/standup', async ({ command, ack, say }) => {
     await ack();
 
     // Prompt each user in the channel for their standup updates
-    const users = command.channel_members;
-    for (const userId of users) {
-        await promptStandupQuestions(userId);
+    if (command.channel_members) {
+	    const users = command.channel_members;
+	    for (const userId of users) {
+		await promptStandupQuestions(userId);
+	    }
     }
 
     // Send confirmation message to channel
