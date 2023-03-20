@@ -15,7 +15,7 @@ const app = new App({
 });
 
 // Schedule the /standup command to be sent every weekday at 9:30 am
-cron.schedule('30 9 * * 1-5', async () => {
+cron.schedule('30 11 * * *', async () => {
   await app.client.chat.postMessage({
     channel: process.env.CHANNEL_ID,
     text: '/standup'
