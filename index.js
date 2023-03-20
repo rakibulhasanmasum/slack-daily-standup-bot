@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const { App, LogLevel } = require('@slack/bolt');
 const { Pool } = require('pg');
 const cron = require('node-cron');
+const axios = require('axios');
 
 dotenv.config();
 
@@ -82,8 +83,9 @@ app.command('/standup', async ({ command, ack, say }) => {
 
     // Prompt each user in the channel for their standup updates
     const channelId = command.channel_id;
-    const slackResponse = await fetch(`https://slack.com/api/conversations.members?token=${process.env.SLACK_APP_TOKEN}&channel=${channelId}`);
-    const users = slackResponse.get("members");
+    const slackResponse = await axios.get(`https://slack.com/api/conversations.members?token=${process.env.SLACK_APP_TOKEN}&channel=${channelId}`);
+    console.log(slackResponse.data());
+    const users = slackResponse.data()['members'];
     console.log(users);
 
     for (const userId of users) {
