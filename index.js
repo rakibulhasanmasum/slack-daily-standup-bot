@@ -128,7 +128,7 @@ async function promptStandupQuestions(userId, say) {
 
       // Listen for user input in response to third standup prompt
       app.action("blockers_update", async ({ body, ack, respond }) => {
-        await ack();
+        // await ack();
         const blockersUpdate = body.actions[0].value;
 
         // Store standup updates in Postgres or another database
