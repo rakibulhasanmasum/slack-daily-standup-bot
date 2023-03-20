@@ -83,9 +83,16 @@ app.command('/standup', async ({ command, ack, say }) => {
 
     // Prompt each user in the channel for their standup updates
     const channelId = command.channel_id;
-    const slackResponse = await axios.get(`https://slack.com/api/conversations.members?token=${process.env.SLACK_APP_TOKEN}&channel=${channelId}`);
-    console.log(slackResponse.data());
-    const users = slackResponse.data()['members'];
+    const config = {
+	headers: { Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`}
+    }
+    const slackResponse = await axios
+					.get(
+						`https://slack.com/api/conversations.members?channel=${channelId}`, 
+						config
+					);
+    console.log(channelId, slackResponse.data);
+    const users = slackResponse.data['members'];
     console.log(users);
 
     for (const userId of users) {
